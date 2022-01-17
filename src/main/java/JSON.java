@@ -6,7 +6,8 @@ import java.io.Reader;
 import java.net.URL;
 import java.nio.charset.Charset;
 
-import com.github.twitch4j.helix.domain.User;
+import com.github.twitch4j.TwitchClient;
+import com.github.twitch4j.tmi.domain.Chatters;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -41,14 +42,13 @@ public class JSON {
         System.out.println(chatters);
     }
 
-    public static String biggestStreamer(User user) throws IOException, JSONException{
-        System.out.println(String.valueOf(user));
+    public static void biggestStreamer(String user, TwitchClient client) throws IOException, JSONException{
+        System.out.println(user);
 
-        String.format("https://tmi.twitch.tv/group/user/","", "/chatters");
-        JSONObject json = readJsonFromUrl("https://tmi.twitch.tv/group/user/wikwak3/chatters");
+        JSONObject json = readJsonFromUrl("https://tmi.twitch.tv/group/user/" + user + "/chatters");
         JSONObject test = json.getJSONObject("chatters");
         JSONArray chatters = test.getJSONArray("viewers");
         System.out.println(chatters);
-        return "hello";
+
     }
 }

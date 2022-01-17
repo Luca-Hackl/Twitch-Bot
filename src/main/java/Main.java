@@ -2,13 +2,10 @@ import com.github.philippheuer.credentialmanager.domain.OAuth2Credential;
 import com.github.twitch4j.TwitchClient;
 import com.github.twitch4j.TwitchClientBuilder;
 import com.github.twitch4j.helix.domain.StreamList;
-import com.github.twitch4j.helix.domain.UserList;
 
 import io.github.cdimascio.dotenv.Dotenv;
-//import io.github.cdimascio.dotenv.DotenvException;
 
 import java.io.*;
-import java.util.Arrays;
 
 
 public class Main
@@ -27,8 +24,10 @@ public class Main
         TwitchClient twitchClient = TwitchClientBuilder.builder()
             .withEnableChat(true)
             .withEnableHelix(true)
+            .withEnableTMI(true)
             .withChatAccount(credential)
             .build();
+
 
         //twitchClient.getChat().sendMessage("wikwak3", "Hey!");
 
@@ -38,19 +37,15 @@ public class Main
 
         StreamList resultList = twitchClient.getHelix().getStreams(token, null, null, 5, null, null, null, null).execute();
         resultList.getStreams().forEach(stream -> {
-            System.out.println("ID: " + stream.getId() + " - Title: " + stream.getTitle());
-        });
-
-        UserList resultList2 = twitchClient.getHelix().getUsers(token, Arrays.asList("451745803"), null).execute();
-        resultList2.getUsers().forEach(user -> {
-            System.out.println("USER:" + user);
+            System.out.println("Name:" + stream.getUserLogin());
 
             try {
-                reader.biggestStreamer(user);
+                reader.biggestStreamer(stream.getUserLogin(), twitchClient);
             } catch (IOException e) {
                 e.printStackTrace();
             }
         });
+
 
 
     }
