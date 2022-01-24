@@ -5,9 +5,8 @@ import java.io.InputStreamReader;
 import java.io.Reader;
 import java.net.URL;
 import java.nio.charset.Charset;
+import java.util.ArrayList;
 
-import com.github.twitch4j.TwitchClient;
-import com.github.twitch4j.tmi.domain.Chatters;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -35,20 +34,27 @@ public class JSON {
         }
     }
 
-    public static void chatterRead() throws IOException, JSONException {
+    public static void ownChanel() throws IOException, JSONException {
+
         JSONObject json = readJsonFromUrl("https://tmi.twitch.tv/group/user/wikwak3/chatters");
         JSONObject test = json.getJSONObject("chatters");
         JSONArray chatters = test.getJSONArray("viewers");
-        System.out.println(chatters);
+
     }
 
-    public static void biggestStreamer(String user, TwitchClient client) throws IOException, JSONException{
-        System.out.println(user);
+    public static ArrayList<String> biggestStreamer(String user) throws IOException, JSONException{
 
         JSONObject json = readJsonFromUrl("https://tmi.twitch.tv/group/user/" + user + "/chatters");
         JSONObject test = json.getJSONObject("chatters");
         JSONArray chatters = test.getJSONArray("viewers");
-        System.out.println(chatters);
+
+        ArrayList <String> list = new ArrayList<String>();
+        for(int i=0; i < chatters.length(); i++) {
+            list.add(chatters.getString(i));
+        }
+
+        return list;
+
 
     }
 }

@@ -6,49 +6,58 @@ import com.github.twitch4j.helix.domain.StreamList;
 import io.github.cdimascio.dotenv.Dotenv;
 
 import java.io.*;
+import java.sql.Connection;
+import java.sql.SQLException;
+import java.util.ArrayList;
 
 
 public class Main
 {
 
-    public static void main (String[] args) throws IOException {
+    public static void main (String[] args) throws IOException, SQLException {
 
         Dotenv dotenv = null;
         dotenv = Dotenv.configure().load();
-        String token;
                 System.getenv("SHELL");
-                token = dotenv.get("token");
+                String token = dotenv.get("token");
+                String dbURL = dotenv.get("dbURL");
+                String password = dotenv.get("password");
+
+        Connection connection = SQLsetup.connection(dbURL,"root", password);
+
 
         OAuth2Credential credential = new OAuth2Credential("twitch", token);
 
         TwitchClient twitchClient = TwitchClientBuilder.builder()
             .withEnableChat(true)
             .withEnableHelix(true)
-            .withEnableTMI(true)
             .withChatAccount(credential)
             .build();
 
-
-        //twitchClient.getChat().sendMessage("wikwak3", "Hey!");
-
         JSON reader = new JSON();
 
-        reader.chatterRead();
+        try {
+            ArrayList <String> listOfBots = reader.biggestStreamer("wikwak3");
+            ArrayList <String> unchecked = SQLsetup.botcheck(listOfBots, connection);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
 
-        StreamList resultList = twitchClient.getHelix().getStreams(token, null, null, 5, null, null, null, null).execute();
+        //twitchClient.getChat().sendMessage("wikwak3", "Hey!");
+        compare(twitchClient, token, reader);
+
+    }
+
+    public static void compare (TwitchClient twitchClient, String token, JSON reader){
+        StreamList resultList = twitchClient.getHelix().getStreams(token, null, null, 1, null, null, null, null).execute();
         resultList.getStreams().forEach(stream -> {
-            System.out.println("Name:" + stream.getUserLogin());
-
             try {
-                reader.biggestStreamer(stream.getUserLogin(), twitchClient);
+                ArrayList <String> biggestStreamerChatters = reader.biggestStreamer(stream.getUserLogin());
             } catch (IOException e) {
                 e.printStackTrace();
             }
         });
 
-
-
     }
-
 
 }
