@@ -34,30 +34,37 @@ public class Main
             .withChatAccount(credential)
             .build();
 
-        JSON reader = new JSON();
+        IsBot comparer = new IsBot();
 
+        JSON reader = new JSON();
+        ArrayList<String> unchecked = null;
         try {
-            ArrayList <String> listOfBots = reader.biggestStreamer("wikwak3");
-            ArrayList <String> unchecked = SQLsetup.botcheck(listOfBots, connection);
+            ArrayList <String> listOfBots = comparer.biggestStreamer("wikwak3", reader);
+            unchecked = SQLsetup.normalUserCheck(listOfBots, connection);
         } catch (IOException e) {
             e.printStackTrace();
         }
 
-        //twitchClient.getChat().sendMessage("wikwak3", "Hey!");
-        compare(twitchClient, token, reader);
+
+        ArrayList <String> viewersBigStreams = compare(twitchClient, token, comparer, reader);
+
+        comparer.finalBotCheck(viewersBigStreams, unchecked, twitchClient);
 
     }
 
-    public static void compare (TwitchClient twitchClient, String token, JSON reader){
+    public static ArrayList <String> compare (TwitchClient twitchClient, String token, IsBot comparer, JSON reader){
+        ArrayList <String> viewersBigStreams = new ArrayList<>();
+
         StreamList resultList = twitchClient.getHelix().getStreams(token, null, null, 1, null, null, null, null).execute();
         resultList.getStreams().forEach(stream -> {
             try {
-                ArrayList <String> biggestStreamerChatters = reader.biggestStreamer(stream.getUserLogin());
+                ArrayList <String> biggestStreamerChatters = comparer.biggestStreamer(stream.getUserLogin(), reader);
+                viewersBigStreams.addAll(biggestStreamerChatters);
             } catch (IOException e) {
                 e.printStackTrace();
             }
         });
-
+        return viewersBigStreams;
     }
 
 }

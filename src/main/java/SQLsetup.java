@@ -15,26 +15,25 @@ public class SQLsetup {
 
     }
 
-    public static ArrayList botcheck (ArrayList<String> viewers, Connection connection) {
+    public static ArrayList normalUserCheck (ArrayList<String> viewers, Connection connection) {
 
         ArrayList<String> unchecked = new ArrayList<String>();
 
-        String namessss = "wwwww";
+        for (int i = 0; i < unchecked.size(); i++) {
+            String user = unchecked.get(i);
+            String query = "select * from bot where name=\'" + user + "\'";
+            try (Statement stmt = connection.createStatement();
+                 ResultSet rs = stmt.executeQuery(query)) {
+                while (rs.next()) {
 
-        String query = "select * from bot where name=" + namessss;
-        String user = namessss;
-        System.out.println(query);
-        try (Statement stmt = connection.createStatement();
-             ResultSet rs = stmt.executeQuery(query)) {
-            while (rs.next()) {
-                user = rs.getString("bot");
-                System.out.println("USER: " + user);
+                    user = rs.getString("bot");
+                }
+            } catch (SQLException ex) {
+                unchecked.add(user);
+                ex.printStackTrace();
             }
-        } catch (SQLException ex) {
-            unchecked.add(user);
-            ex.printStackTrace();
+            return unchecked;
         }
-        return unchecked;
-
+        return null;
     }
 }
