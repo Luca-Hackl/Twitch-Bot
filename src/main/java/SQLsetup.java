@@ -19,21 +19,22 @@ public class SQLsetup {
 
         ArrayList<String> unchecked = new ArrayList<String>();
 
-        for (int i = 0; i < unchecked.size(); i++) {
-            String user = unchecked.get(i);
+        for (int i = 0; i < viewers.size(); i++) {
+            String user = viewers.get(i);
             String query = "select * from bot where name=\'" + user + "\'";
             try (Statement stmt = connection.createStatement();
                  ResultSet rs = stmt.executeQuery(query)) {
+                if (rs.next() == false){
+                    unchecked.add(user);
+                }
                 while (rs.next()) {
-
                     user = rs.getString("bot");
                 }
             } catch (SQLException ex) {
-                unchecked.add(user);
                 ex.printStackTrace();
             }
             return unchecked;
         }
-        return null;
+        return unchecked;
     }
 }

@@ -24,11 +24,11 @@ public class IsBot {
     }
 
     public static void finalBotCheck(ArrayList <String> allViewers, ArrayList <String> myViewers, TwitchClient twitchClient) {
-
         for (int i = 0; i < myViewers.size(); i++){
             String user = myViewers.get(i);
+            System.out.println("USER: " + user);
             if (allViewers.contains(user)) {
-                twitchClient.getChat().sendMessage("wikwak3", "/ban{" + user + "}");
+                twitchClient.getChat().sendMessage("wikwak3", "/ban " + user);
             }
         }
 
