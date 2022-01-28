@@ -6,8 +6,7 @@ public class SQLsetup {
     public static Connection connection(String dbURL, String username, String password) throws SQLException {
 
         try {
-            Connection connection = DriverManager.getConnection(dbURL, username, password);
-            return connection;
+            return DriverManager.getConnection(dbURL, username, password);
         } catch (SQLException throwable) {
             throwable.printStackTrace();
             return null;
@@ -15,20 +14,16 @@ public class SQLsetup {
 
     }
 
-    public static ArrayList normalUserCheck (ArrayList<String> viewers, Connection connection) {
+    public static ArrayList <String> normalUserCheck (ArrayList<String> viewers, Connection connection) {
 
         ArrayList<String> unchecked = new ArrayList<String>();
 
-        for (int i = 0; i < viewers.size(); i++) {
-            String user = viewers.get(i);
-            String query = "select * from bot where name=\'" + user + "\'";
+        for (String user : viewers) {
+            String query = "select * from bot where name='" + user + "'";
             try (Statement stmt = connection.createStatement();
                  ResultSet rs = stmt.executeQuery(query)) {
-                if (rs.next() == false){
+                if (!rs.next()) {
                     unchecked.add(user);
-                }
-                while (rs.next()) {
-                    user = rs.getString("bot");
                 }
             } catch (SQLException ex) {
                 ex.printStackTrace();

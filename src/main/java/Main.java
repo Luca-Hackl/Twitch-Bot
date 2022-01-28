@@ -25,7 +25,6 @@ public class Main
 
         Connection connection = SQLsetup.connection(dbURL,"root", password);
 
-
         OAuth2Credential credential = new OAuth2Credential("twitch", token);
 
         TwitchClient twitchClient = TwitchClientBuilder.builder()
@@ -39,29 +38,28 @@ public class Main
         JSON reader = new JSON();
         ArrayList<String> unchecked = null;
         try {
-            ArrayList <String> listOfBots = comparer.biggestStreamer("wikwak3", reader);
+            ArrayList <String> listOfBots = IsBot.biggestStreamer("wikwak3", reader);
             unchecked = SQLsetup.normalUserCheck(listOfBots, connection);
         } catch (IOException e) {
             e.printStackTrace();
         }
 
-
         ArrayList <String> viewersBigStreams = compare(twitchClient, token, comparer, reader);
-        System.out.println("unchecked: " + unchecked);
-        comparer.finalBotCheck(viewersBigStreams, unchecked, twitchClient);
+        assert unchecked != null;
+        IsBot.finalBotCheck(viewersBigStreams, unchecked, twitchClient);
 
     }
 
     private static ArrayList <String> compare (TwitchClient twitchClient, String token, IsBot comparer, JSON reader){
         ArrayList <String> viewersBigStreams = new ArrayList<>();
         ArrayList <String> languages = new ArrayList<>();
-        languages.add("en");
+        //languages.add("en");
         languages.add("de");
 
-        StreamList resultList = twitchClient.getHelix().getStreams(token, null, null, 5, null, languages, null, null).execute();
+        StreamList resultList = twitchClient.getHelix().getStreams(token, null, null, 10, null, languages, null, null).execute();
         resultList.getStreams().forEach(stream -> {
             try {
-                ArrayList <String> biggestStreamerChatters = comparer.biggestStreamer(stream.getUserLogin(), reader);
+                ArrayList <String> biggestStreamerChatters = IsBot.biggestStreamer(stream.getUserLogin(), reader);
                 viewersBigStreams.addAll(biggestStreamerChatters);
             } catch (IOException e) {
                 e.printStackTrace();

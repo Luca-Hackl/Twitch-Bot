@@ -10,7 +10,7 @@ public class IsBot {
 
     public static ArrayList<String> biggestStreamer(String user, JSON reader) throws IOException, JSONException {
 
-        JSONObject json = reader.readJsonFromUrl("https://tmi.twitch.tv/group/user/" + user + "/chatters");
+        JSONObject json = JSON.readJsonFromUrl("https://tmi.twitch.tv/group/user/" + user + "/chatters");
         JSONObject test = json.getJSONObject("chatters");
         JSONArray chatters = test.getJSONArray("viewers");
 
@@ -24,9 +24,8 @@ public class IsBot {
     }
 
     public static void finalBotCheck(ArrayList <String> allViewers, ArrayList <String> myViewers, TwitchClient twitchClient) {
-        for (int i = 0; i < myViewers.size(); i++){
-            String user = myViewers.get(i);
-            System.out.println("USER: " + user);
+
+        for (String user : myViewers) {
             if (allViewers.contains(user)) {
                 twitchClient.getChat().sendMessage("wikwak3", "/ban " + user);
             }
