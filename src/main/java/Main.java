@@ -4,6 +4,8 @@ import com.github.twitch4j.TwitchClientBuilder;
 import com.github.twitch4j.helix.domain.StreamList;
 
 import io.github.cdimascio.dotenv.Dotenv;
+import org.json.JSONArray;
+import org.json.JSONObject;
 
 import java.io.*;
 import java.sql.Connection;
@@ -33,6 +35,7 @@ public class Main
             .withChatAccount(credential)
             .build();
 
+
         IsBot comparer = new IsBot();
 
         JSON reader = new JSON();
@@ -48,15 +51,30 @@ public class Main
         assert unchecked != null;
         IsBot.finalBotCheck(viewersBigStreams, unchecked, twitchClient);
 
+        
+
+        JSONObject twitchinsights = JSON.readJsonFromUrl("https://api.twitchinsights.net/v1/bots/online");
+        JSONArray activeBots = twitchinsights.getJSONArray("bots");
+        for (Object onlineBots : activeBots){
+            String bots = String.valueOf(onlineBots.toString().split(",")[0]);
+            String name = bots.substring(2, bots.length() - 1);
+            if (!BotDatabase.alreadyBanned(connection, name)){
+                //twitchClient.getChat().sendMessage("wikwak3", "/ban ");
+                BotDatabase.addsBannedBots(connection, name);
+            } else {
+                System.out.println("Wurde gebannt");
+            }
+        }
+
     }
 
     private static ArrayList <String> compare (TwitchClient twitchClient, String token, IsBot comparer, JSON reader){
         ArrayList <String> viewersBigStreams = new ArrayList<>();
         ArrayList <String> languages = new ArrayList<>();
-        //languages.add("en");
+        languages.add("en");
         languages.add("de");
 
-        StreamList resultList = twitchClient.getHelix().getStreams(token, null, null, 10, null, languages, null, null).execute();
+        StreamList resultList = twitchClient.getHelix().getStreams(token, null, null, 1, null, languages, null, null).execute();
         resultList.getStreams().forEach(stream -> {
             try {
                 ArrayList <String> biggestStreamerChatters = IsBot.biggestStreamer(stream.getUserLogin(), reader);
