@@ -11,12 +11,13 @@ import java.io.*;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.concurrent.TimeUnit;
 
 
 public class Main
 {
 
-    public static void main (String[] args) throws IOException, SQLException {
+    public static void main (String[] args) throws IOException, SQLException, InterruptedException {
 
         Dotenv dotenv = null;
         dotenv = Dotenv.configure().load();
@@ -35,11 +36,11 @@ public class Main
             .withChatAccount(credential)
             .build();
 
-
         IsBot comparer = new IsBot();
 
         JSON reader = new JSON();
         ArrayList<String> unchecked = null;
+
         try {
             ArrayList <String> listOfBots = IsBot.biggestStreamer("wikwak3", reader);
             unchecked = SQLsetup.normalUserCheck(listOfBots, connection);
@@ -50,20 +51,21 @@ public class Main
         ArrayList <String> viewersBigStreams = compare(twitchClient, token, comparer, reader);
         assert unchecked != null;
         IsBot.finalBotCheck(viewersBigStreams, unchecked, twitchClient);
-
         
 
-        JSONObject twitchinsights = JSON.readJsonFromUrl("https://api.twitchinsights.net/v1/bots/online");
-        JSONArray activeBots = twitchinsights.getJSONArray("bots");
-        for (Object onlineBots : activeBots){
-            String bots = String.valueOf(onlineBots.toString().split(",")[0]);
-            String name = bots.substring(2, bots.length() - 1);
-            if (!BotDatabase.alreadyBanned(connection, name)){
-                //twitchClient.getChat().sendMessage("wikwak3", "/ban ");
-                BotDatabase.addsBannedBots(connection, name);
-            } else {
-                System.out.println("Wurde gebannt");
+        while(true){
+            JSONObject twitchinsights = JSON.readJsonFromUrl("https://api.twitchinsights.net/v1/bots/online");
+            JSONArray activeBots = twitchinsights.getJSONArray("bots");
+            for (Object onlineBots : activeBots){
+                String bots = String.valueOf(onlineBots.toString().split(",")[0]);
+                String name = bots.substring(2, bots.length() - 1);
+                if (!BotDatabase.alreadyBanned(connection, name)){
+                    twitchClient.getChat().sendMessage("wikwak3", "/ban " + name);
+                    BotDatabase.addsBannedBots(connection, name);
+                }
             }
+
+            TimeUnit.MINUTES.sleep(1);
         }
 
     }
@@ -74,7 +76,7 @@ public class Main
         languages.add("en");
         languages.add("de");
 
-        StreamList resultList = twitchClient.getHelix().getStreams(token, null, null, 1, null, languages, null, null).execute();
+        StreamList resultList = twitchClient.getHelix().getStreams(token, null, null, 20, null, languages, null, null).execute();
         resultList.getStreams().forEach(stream -> {
             try {
                 ArrayList <String> biggestStreamerChatters = IsBot.biggestStreamer(stream.getUserLogin(), reader);
