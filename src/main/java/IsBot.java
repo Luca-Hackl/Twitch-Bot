@@ -1,4 +1,5 @@
 import com.github.twitch4j.TwitchClient;
+import com.github.twitch4j.helix.domain.StreamList;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -31,9 +32,25 @@ public class IsBot {
                 twitchClient.getChat().sendMessage("wikwak3", "/ban " + user);
             }
         }
+    }
 
 
+    public static ArrayList <String> compare (TwitchClient twitchClient, String token, IsBot comparer, JSON reader){
+        ArrayList <String> viewersBigStreams = new ArrayList<>();
+        ArrayList <String> languages = new ArrayList<>();
+        languages.add("en");
+        languages.add("de");
 
+        StreamList resultList = twitchClient.getHelix().getStreams(token, null, null, 99, null, languages, null, null).execute();
+        resultList.getStreams().forEach(stream -> {
+            try {
+                ArrayList <String> biggestStreamerChatters = IsBot.biggestStreamer(stream.getUserLogin(), reader);
+                viewersBigStreams.addAll(biggestStreamerChatters);
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        });
+        return viewersBigStreams;
     }
 
 }
