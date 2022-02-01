@@ -19,7 +19,7 @@ public class SQLsetup {
         ArrayList<String> unchecked = new ArrayList<String>();
 
         for (String user : viewers) {
-            String query = "select * from bot where name='" + user + "'";
+            String query = "select * from bot where name='" + user + "'";   //checks if user is already banned
             try (Statement stmt = connection.createStatement();
                  ResultSet rs = stmt.executeQuery(query)) {
                 if (!rs.next()) {

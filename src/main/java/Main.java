@@ -31,7 +31,7 @@ public class Main
             .build();
 
         JSON reader = new JSON();
-        StartChecking.twitchinsightscheck(twitchClient, connection, reader, token);
+        StartChecking.twitchinsightscheck(twitchClient, connection, reader, token); //uses twitchinsights API to see active bots
 
     }
 
