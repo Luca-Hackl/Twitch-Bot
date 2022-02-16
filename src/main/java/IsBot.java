@@ -9,11 +9,10 @@ import java.util.ArrayList;
 
 public class IsBot {
 
-    private static JSONObject json;
-
     public static ArrayList<String> biggestStreamer(String user) throws IOException, JSONException {
 
-        JSONObject json = JSON.readJsonFromUrl("https://tmi.twitch.tv/group/user/" + user + "/chatters");
+        JSON jsonFromUrl = new JSON("https://tmi.twitch.tv/group/user/" + user + "/chatters");
+        JSONObject json = jsonFromUrl.readJsonFromUrl();
         JSONObject test = json.getJSONObject("chatters");
         JSONArray chatters = test.getJSONArray("viewers");
 

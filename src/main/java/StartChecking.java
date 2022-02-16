@@ -18,8 +18,10 @@ public class StartChecking { //checker
     public void twitchInsightsCheck(TwitchClient twitchClient, String token) throws SQLException, IOException, InterruptedException {
         int counter = 0;
 
+        JSON jsonFromUrl = new JSON("https://api.twitchinsights.net/v1/bots/online");
+
         while (true) {
-            JSONObject twitchinsights = JSON.readJsonFromUrl("https://api.twitchinsights.net/v1/bots/online");
+            JSONObject twitchinsights = jsonFromUrl.readJsonFromUrl();
             JSONArray activeBots = twitchinsights.getJSONArray("bots");
             for (Object onlineBots : activeBots) {
                 String bots = String.valueOf(onlineBots.toString().split(",")[0]);  //gets name of bot

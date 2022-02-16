@@ -9,7 +9,7 @@ public class BotDatabase {
         this.connection = DriverManager.getConnection(dbURL, username, password);
     }
 
-    public void addsBannedBots(String name) throws SQLException {
+    public void addsBannedBots(String name) {
 
         String sql = "INSERT INTO bot(name) VALUES(?)";     //adds banned bots to database
 

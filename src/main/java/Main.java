@@ -18,6 +18,7 @@ public class Main {
         String password = dotenv.get("password");
 
         BotDatabase conni = new BotDatabase(dbURL, "root", password);
+
         assert token != null;
         OAuth2Credential credential = new OAuth2Credential("twitch", token);
 
@@ -27,8 +28,9 @@ public class Main {
                 .withChatAccount(credential)
                 .build();
 
+
         StartChecking checker = new StartChecking(conni);
-        checker.twitchInsightsCheck(twitchClient, token); //uses twitchinsights API to see active bots
+        checker.twitchInsightsCheck(twitchClient, token); //uses twitchInsights API to see active bots
 
     }
 

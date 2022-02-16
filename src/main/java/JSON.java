@@ -11,6 +11,12 @@ import org.json.JSONObject;
 
 public class JSON {
 
+    private String URL;
+
+    public JSON(String URL) {
+        this.URL = URL;
+    }
+
     private static String readAll(Reader rd) throws IOException {
         StringBuilder sb = new StringBuilder();
         int cp;
@@ -20,8 +26,8 @@ public class JSON {
         return sb.toString();
     }
 
-    public static JSONObject readJsonFromUrl(String url) throws IOException, JSONException {
-        InputStream is = new URL(url).openStream();
+    public JSONObject readJsonFromUrl() throws IOException, JSONException {
+        InputStream is = new URL(this.URL).openStream();
         try {
             BufferedReader rd = new BufferedReader(new InputStreamReader(is, StandardCharsets.UTF_8));
             String jsonText = readAll(rd);
