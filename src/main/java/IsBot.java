@@ -11,8 +11,7 @@ public class IsBot {
 
     public static ArrayList<String> biggestStreamer(String user) throws IOException, JSONException {
 
-        JSON jsonFromUrl = new JSON("https://tmi.twitch.tv/group/user/" + user + "/chatters");
-        JSONObject json = jsonFromUrl.readJsonFromUrl();
+        JSONObject json = JSON.readJsonFromUrl("https://tmi.twitch.tv/group/user/" + user + "/chatters");
         JSONObject test = json.getJSONObject("chatters");
         JSONArray chatters = test.getJSONArray("viewers");
 
